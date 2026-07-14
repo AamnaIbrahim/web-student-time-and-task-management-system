@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary-50: #f2f6fd;
+  --color-primary-100: #e4ecfa;
+  --color-primary-200: #c3d5f3;
+  --color-primary-300: #9ab8ea;
+  --color-primary-400: #6b94de;
+  --color-primary-500: #4672d1;
+  --color-primary-600: #3557b3;
+  --color-primary-700: #2c458f;
+  --color-primary-800: #273b75;
+  --color-primary-900: #233362;
+
+  --color-surface-50: #fafbfc;
+  --color-surface-100: #f4f6f8;
+  --color-surface-200: #e9ecf0;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-surface-50 text-slate-800 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl border border-surface-200 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-surface-100;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-surface-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100;
+  }
+
+  .label-text {
+    @apply mb-1 block text-sm font-medium text-slate-600;
+  }
+}
