@@ -3,6 +3,7 @@ import { ROUTES } from "../constants/routePaths";
 
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/auth/LoginPage";
@@ -24,12 +25,14 @@ function AppRoutes() {
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
 
-      <Route element={<MainLayout />}>
-        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-        <Route path={ROUTES.SUBJECTS} element={<SubjectsPage />} />
-        <Route path={ROUTES.TASKS} element={<TasksPage />} />
-        <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
-        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route path={ROUTES.SUBJECTS} element={<SubjectsPage />} />
+          <Route path={ROUTES.TASKS} element={<TasksPage />} />
+          <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
