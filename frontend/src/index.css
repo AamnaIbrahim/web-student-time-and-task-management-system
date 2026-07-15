@@ -49,6 +49,12 @@
   .glass-card {
     @apply rounded-2xl border border-white/40 bg-white/50 shadow-xl backdrop-blur-xl;
   }
+
+  /* Slightly lighter glass used for dashboard content cards, sitting on
+     the surface-50 body background rather than a gradient auth backdrop. */
+  .glass-panel {
+    @apply rounded-2xl border border-white/60 bg-white/70 shadow-md backdrop-blur-xl transition-all duration-300;
+  }
 }
 
 @keyframes fade-in-up {
@@ -83,5 +89,9 @@
 
   .animation-delay-2000 {
     animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
   }
 }
