@@ -23,6 +23,17 @@
   body {
     @apply bg-surface-50 text-slate-800 font-sans antialiased;
   }
+
+  /* Consistent pointer cursor on every interactive element — matches the
+     NavLink sidebar items, which get "cursor: pointer" for free since
+     they render as <a> tags. Disabled buttons fall back to
+     "not-allowed" via the disabled:cursor-not-allowed utility used on
+     .btn-primary etc., which — being applied afterward via @apply in
+     the components layer — takes priority over this base rule. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @layer components {
@@ -50,8 +61,8 @@
     @apply rounded-2xl border border-white/40 bg-white/50 shadow-xl backdrop-blur-xl;
   }
 
-  /* Slightly lighter glass used for dashboard content cards, sitting on
-     the surface-50 body background rather than a gradient auth backdrop. */
+  /* Slightly lighter glass used for dashboard/subjects content cards,
+     sitting on the surface-50 body background. */
   .glass-panel {
     @apply rounded-2xl border border-white/60 bg-white/70 shadow-md backdrop-blur-xl transition-all duration-300;
   }

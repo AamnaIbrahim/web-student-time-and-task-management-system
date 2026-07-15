@@ -67,13 +67,13 @@ function Sidebar({ isOpen = false, onClose = () => {} }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 border-r border-surface-200 bg-white md:block">
+      <aside className="relative z-[60] hidden w-64 shrink-0 border-r border-surface-200 bg-white md:block">
         {content}
       </aside>
 
       {/* Mobile drawer */}
       <div
-        className={`fixed inset-0 z-40 md:hidden ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-[60] md:hidden ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         <div
           onClick={onClose}

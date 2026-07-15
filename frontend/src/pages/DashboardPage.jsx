@@ -3,6 +3,8 @@ import { ListTodo, CalendarClock, ListChecks, CheckCircle2 } from "lucide-react"
 import { useTasks } from "../hooks/useTasks";
 import { useSubjects } from "../hooks/useSubjects";
 import { isToday, isUpcomingWithin } from "../utils/dateHelpers";
+import GlassBackdrop from "../components/common/GlassBackdrop";
+import LoadingState from "../components/common/LoadingState";
 import StatCard from "../components/dashboard/StatCard";
 import TaskListCard from "../components/dashboard/TaskListCard";
 import ProductivitySummary from "../components/dashboard/ProductivitySummary";
@@ -38,21 +40,11 @@ function DashboardPage() {
 
   const isLoading = tasksLoading || subjectsLoading;
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-200 border-t-primary-600" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState />;
 
   return (
     <div className="relative">
-      {/* Soft background blobs so the glass panels have visible depth
-          behind them, without competing with the content itself. */}
-      <div className="pointer-events-none absolute -left-10 -top-16 -z-10 h-64 w-64 animate-blob rounded-full bg-primary-200/40 blur-3xl" />
-      <div className="animation-delay-2000 pointer-events-none absolute right-0 top-40 -z-10 h-56 w-56 animate-blob rounded-full bg-amber-200/30 blur-3xl" />
-      <div className="animation-delay-4000 pointer-events-none absolute left-1/3 bottom-0 -z-10 h-56 w-56 animate-blob rounded-full bg-emerald-200/30 blur-3xl" />
+      <GlassBackdrop />
 
       <div className="space-y-6">
         <div>
