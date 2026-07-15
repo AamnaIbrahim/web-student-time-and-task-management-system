@@ -2,19 +2,32 @@ import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { useTasks } from "../hooks/useTasks";
 import { useSubjects } from "../hooks/useSubjects";
+import { isToday, isUpcomingWithin } from "../utils/dateHelpers";
 import GlassBackdrop from "../components/common/GlassBackdrop";
 import LoadingState from "../components/common/LoadingState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskFormModal from "../components/tasks/TaskFormModal";
 
-const FILTERS = ["All", "Pending", "Completed"];
+const STATUS_FILTERS = ["All", "Pending", "Completed"];
+const PRIORITY_RANK = { High: 3, Medium: 2, Low: 1 };
+
+function isWithinRange(dueDate, range) {
+  if (range === "week") return isToday(dueDate) || isUpcomingWithin(dueDate, 7);
+  if (range === "month") return isToday(dueDate) || isUpcomingWithin(dueDate, 30);
+  return true; // "all"
+}
 
 function TasksPage() {
   const { tasks, loading: tasksLoading, addTask, editTask, removeTask, toggleTaskStatus } = useTasks();
   const { subjects, loading: subjectsLoading } = useSubjects();
 
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [subjectFilter, setSubjectFilter] = useState("All");
+  const [priorityFilter, setPriorityFilter] = useState("All");
+  const [rangeFilter, setRangeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("dueDate");
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deletingTask, setDeletingTask] = useState(null);
@@ -25,10 +38,31 @@ function TasksPage() {
     [subjects]
   );
 
-  const filteredTasks = useMemo(() => {
-    if (activeFilter === "All") return tasks;
-    return tasks.filter((t) => t.status === activeFilter);
-  }, [tasks, activeFilter]);
+  const visibleTasks = useMemo(() => {
+    let result = tasks;
+
+    if (statusFilter !== "All") {
+      result = result.filter((t) => t.status === statusFilter);
+    }
+    if (subjectFilter !== "All") {
+      result = result.filter((t) => t.subjectId === subjectFilter);
+    }
+    if (priorityFilter !== "All") {
+      result = result.filter((t) => t.priority === priorityFilter);
+    }
+    if (rangeFilter !== "all") {
+      result = result.filter((t) => isWithinRange(t.dueDate, rangeFilter));
+    }
+
+    const sorted = [...result];
+    if (sortBy === "dueDate") {
+      sorted.sort((a, b) => `${a.dueDate}T${a.dueTime || "00:00"}`.localeCompare(`${b.dueDate}T${b.dueTime || "00:00"}`));
+    } else if (sortBy === "priority") {
+      sorted.sort((a, b) => (PRIORITY_RANK[b.priority] || 0) - (PRIORITY_RANK[a.priority] || 0));
+    }
+
+    return sorted;
+  }, [tasks, statusFilter, subjectFilter, priorityFilter, rangeFilter, sortBy]);
 
   const openCreateForm = () => {
     setEditingTask(null);
@@ -84,13 +118,14 @@ function TasksPage() {
           </button>
         </div>
 
+        {/* Status tabs */}
         <div className="flex gap-2">
-          {FILTERS.map((filter) => (
+          {STATUS_FILTERS.map((filter) => (
             <button
               key={filter}
-              onClick={() => setActiveFilter(filter)}
+              onClick={() => setStatusFilter(filter)}
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                activeFilter === filter
+                statusFilter === filter
                   ? "bg-primary-600 text-white shadow-md shadow-primary-600/20"
                   : "bg-white/70 text-slate-500 hover:bg-white hover:text-slate-700"
               }`}
@@ -100,13 +135,62 @@ function TasksPage() {
           ))}
         </div>
 
-        {filteredTasks.length === 0 ? (
+        {/* Secondary filters: subject, priority, date range, sort */}
+        <div className="glass-panel flex flex-wrap items-center gap-3 p-3">
+          <select
+            value={subjectFilter}
+            onChange={(e) => setSubjectFilter(e.target.value)}
+            className="input-field w-auto bg-white"
+          >
+            <option value="All">All Subjects</option>
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="input-field w-auto bg-white"
+          >
+            <option value="All">All Priorities</option>
+            <option value="High">High Priority</option>
+            <option value="Medium">Medium Priority</option>
+            <option value="Low">Low Priority</option>
+          </select>
+
+          <select
+            value={rangeFilter}
+            onChange={(e) => setRangeFilter(e.target.value)}
+            className="input-field w-auto bg-white"
+          >
+            <option value="all">Any Time</option>
+            <option value="week">Due This Week</option>
+            <option value="month">Due This Month</option>
+          </select>
+
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-400">Sort by</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="input-field w-auto bg-white"
+            >
+              <option value="dueDate">Nearest Due Date</option>
+              <option value="priority">Priority (High First)</option>
+            </select>
+          </div>
+        </div>
+
+        {visibleTasks.length === 0 ? (
           <div className="glass-panel p-10 text-center text-sm text-slate-400">
-            No {activeFilter !== "All" ? activeFilter.toLowerCase() : ""} tasks to show.
+            No tasks match the selected filters.
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredTasks.map((task) => (
+            {visibleTasks.map((task) => (
               <TaskCard
                 key={task.id}
                 task={task}

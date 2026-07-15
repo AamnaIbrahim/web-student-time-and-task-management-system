@@ -8,13 +8,13 @@ function MainLayout() {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen bg-surface-50">
+    <div className="flex h-screen overflow-hidden bg-surface-50">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex h-screen flex-1 flex-col overflow-hidden">
         <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
 
-        <main className="flex-1 p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div key={location.pathname} className="animate-fade-in-up">
             <Outlet />
           </div>
