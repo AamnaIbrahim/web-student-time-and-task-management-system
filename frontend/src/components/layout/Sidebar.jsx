@@ -3,10 +3,13 @@ import { X, LogOut } from "lucide-react";
 import { NAV_ITEMS } from "../../constants/navItems";
 import { ROUTES } from "../../constants/routePaths";
 import { useAuth } from "../../hooks/useAuth";
+import { useLockBodyScroll } from "../../hooks/useLockBodyScroll";
 
 function Sidebar({ isOpen = false, onClose = () => {} }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  useLockBodyScroll(isOpen);
 
   const handleLogout = async () => {
     await logout();

@@ -4,6 +4,7 @@ import { ROUTES } from "../constants/routePaths";
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import GuestRoute from "./GuestRoute";
 
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/auth/LoginPage";
@@ -20,11 +21,15 @@ function AppRoutes() {
     <Routes>
       <Route path={ROUTES.LANDING} element={<LandingPage />} />
 
-      <Route element={<AuthLayout />}>
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      {/* Logged-in users get redirected away from these back to Dashboard */}
+      <Route element={<GuestRoute />}>
+        <Route element={<AuthLayout />}>
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        </Route>
       </Route>
 
+      {/* Everything below requires a logged-in user */}
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
