@@ -2,15 +2,7 @@ import { useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { NAV_ITEMS } from "../../constants/navItems";
 import { useAuth } from "../../hooks/useAuth";
-
-function getInitials(name = "") {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
+import { getInitials } from "../../utils/stringHelpers";
 
 function Topbar({ onMenuClick }) {
   const { user } = useAuth();
