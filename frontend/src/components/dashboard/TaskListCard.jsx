@@ -6,7 +6,7 @@ const PRIORITY_STYLES = {
   Low: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100",
 };
 
-function TaskListCard({ title, tasks, subjectsById, emptyMessage }) {
+function TaskListCard({ title, tasks, subjectsById, emptyMessage, maxHeightClass }) {
   return (
     <div className="glass-panel p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -19,7 +19,7 @@ function TaskListCard({ title, tasks, subjectsById, emptyMessage }) {
       {tasks.length === 0 ? (
         <p className="py-8 text-center text-sm text-slate-400">{emptyMessage}</p>
       ) : (
-        <ul className="space-y-2.5">
+        <ul className={`space-y-2.5 ${maxHeightClass ? `${maxHeightClass} overflow-y-auto pr-1` : ""}`}>
           {tasks.map((task) => {
             const subject = subjectsById[task.subjectId];
             return (
