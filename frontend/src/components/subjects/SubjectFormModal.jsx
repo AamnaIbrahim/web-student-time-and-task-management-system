@@ -55,7 +55,7 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
           {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label htmlFor="code" className="label-text">
               Course Code

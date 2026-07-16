@@ -3,10 +3,13 @@ import { X, LogOut } from "lucide-react";
 import { NAV_ITEMS } from "../../constants/navItems";
 import { ROUTES } from "../../constants/routePaths";
 import { useAuth } from "../../hooks/useAuth";
+import { useLockBodyScroll } from "../../hooks/useLockBodyScroll";
 
 function Sidebar({ isOpen = false, onClose = () => {} }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  useLockBodyScroll(isOpen);
 
   const handleLogout = async () => {
     await logout();
@@ -28,7 +31,7 @@ function Sidebar({ isOpen = false, onClose = () => {} }) {
         </span>
         <button
           onClick={onClose}
-          className="rounded-lg p-1.5 text-slate-400 hover:bg-surface-100 md:hidden"
+          className="rounded-lg p-1.5 text-slate-400 hover:bg-surface-100 lg:hidden"
           aria-label="Close menu"
         >
           <X className="h-5 w-5" />
@@ -67,13 +70,13 @@ function Sidebar({ isOpen = false, onClose = () => {} }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="relative z-[60] hidden w-64 shrink-0 border-r border-surface-200 bg-white md:block">
+      <aside className="relative z-[60] hidden w-64 shrink-0 border-r border-surface-200 bg-white lg:block">
         {content}
       </aside>
 
-      {/* Mobile drawer */}
+      {/* Mobile/tablet drawer */}
       <div
-        className={`fixed inset-0 z-[60] md:hidden ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-[60] lg:hidden ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         <div
           onClick={onClose}

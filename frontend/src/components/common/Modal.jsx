@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useLockBodyScroll } from "../../hooks/useLockBodyScroll";
 
 function Modal({ isOpen, onClose, title, children }) {
   const [show, setShow] = useState(false);
+
+  useLockBodyScroll(isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -19,7 +22,7 @@ function Modal({ isOpen, onClose, title, children }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         onClick={onClose}
-        className={`fixed inset-0 bg-white/10 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-white/20 backdrop-blur-lg transition-opacity duration-300 ${
           show ? "opacity-100" : "opacity-0"
         }`}
       />

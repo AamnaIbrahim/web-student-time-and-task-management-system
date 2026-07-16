@@ -19,7 +19,9 @@ function CalendarPage() {
     [subjects]
   );
 
-    const tasksByDate = useMemo(() => {
+  // Group tasks by their due date so the grid can show a dot per day
+  // without re-scanning the full task list on every render.
+  const tasksByDate = useMemo(() => {
     const map = {};
     tasks.forEach((task) => {
       const subject = subjectsById[task.subjectId];
@@ -74,6 +76,7 @@ function CalendarPage() {
             tasks={selectedDayTasks}
             subjectsById={subjectsById}
             emptyMessage="No tasks due on this date."
+            maxHeightClass="max-h-[420px]"
           />
         </div>
       </div>
