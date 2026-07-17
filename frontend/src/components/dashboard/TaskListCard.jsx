@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react";
 import { formatDisplayDate, formatDisplayTime } from "../../utils/dateHelpers";
 
 const PRIORITY_STYLES = {
@@ -22,19 +23,32 @@ function TaskListCard({ title, tasks, subjectsById, emptyMessage, maxHeightClass
         <ul className={`space-y-2.5 ${maxHeightClass ? `${maxHeightClass} overflow-y-auto pr-1` : ""}`}>
           {tasks.map((task) => {
             const subject = subjectsById[task.subjectId];
+            const isCompleted = task.status === "Completed";
+
             return (
               <li
                 key={task.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-white/60 bg-white/60 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
+                className={`flex items-center justify-between gap-3 rounded-xl border border-white/60 bg-white/60 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-sm ${
+                  isCompleted ? "opacity-70" : ""
+                }`}
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-800">
-                    {task.title}
-                  </p>
-                  <p className="mt-0.5 text-xs text-slate-400">
-                    {subject?.name || "General"} · {formatDisplayDate(task.dueDate)}
-                    {task.dueTime ? `, ${formatDisplayTime(task.dueTime)}` : ""}
-                  </p>
+                <div className="flex min-w-0 items-start gap-2">
+                  {isCompleted && (
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  )}
+                  <div className="min-w-0">
+                    <p
+                      className={`truncate text-sm font-medium ${
+                        isCompleted ? "text-slate-400 line-through" : "text-slate-800"
+                      }`}
+                    >
+                      {task.title}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      {subject?.name || "General"} · {formatDisplayDate(task.dueDate)}
+                      {task.dueTime ? `, ${formatDisplayTime(task.dueTime)}` : ""}
+                    </p>
+                  </div>
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${PRIORITY_STYLES[task.priority] || "bg-surface-100 text-slate-500"}`}

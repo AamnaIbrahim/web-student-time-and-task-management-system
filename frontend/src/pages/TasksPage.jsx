@@ -15,7 +15,7 @@ const PRIORITY_RANK = { High: 3, Medium: 2, Low: 1 };
 function isWithinRange(dueDate, range) {
   if (range === "week") return isToday(dueDate) || isUpcomingWithin(dueDate, 7);
   if (range === "month") return isToday(dueDate) || isUpcomingWithin(dueDate, 30);
-  return true; // "all"
+  return true;
 }
 
 function TasksPage() {
@@ -101,10 +101,11 @@ function TasksPage() {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="relative">
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <GlassBackdrop />
 
-      <div className="space-y-6">
+      {/* Fixed block — header, status tabs, and filters never scroll */}
+      <div className="shrink-0 space-y-4 pb-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold text-slate-800">Tasks</h1>
@@ -118,7 +119,6 @@ function TasksPage() {
           </button>
         </div>
 
-        {/* Status tabs */}
         <div className="flex gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -135,7 +135,6 @@ function TasksPage() {
           ))}
         </div>
 
-        {/* Secondary filters: subject, priority, date range, sort */}
         <div className="glass-panel flex flex-wrap items-center gap-3 p-3">
           <select
             value={subjectFilter}
@@ -183,13 +182,16 @@ function TasksPage() {
             </select>
           </div>
         </div>
+      </div>
 
+      {/* Scrollable body*/}
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {visibleTasks.length === 0 ? (
           <div className="glass-panel p-10 text-center text-sm text-slate-400">
             No tasks match the selected filters.
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 pb-2">
             {visibleTasks.map((task) => (
               <TaskCard
                 key={task.id}

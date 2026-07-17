@@ -43,18 +43,20 @@ function CalendarPage() {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="relative">
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <GlassBackdrop />
 
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Calendar</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Visualize your task deadlines by date.
-          </p>
-        </div>
+      {/* Fixed header */}
+      <div className="shrink-0 pb-4">
+        <h1 className="text-xl font-semibold text-slate-800">Calendar</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Visualize your task deadlines by date.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
+      {/* Scrollable body */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 gap-4 pb-2 lg:grid-cols-[1fr_320px]">
           <CalendarGrid
             currentMonth={currentMonth}
             onMonthChange={setCurrentMonth}

@@ -46,29 +46,31 @@ function SubjectsPage() {
   if (loading) return <LoadingState />;
 
   return (
-    <div className="relative">
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <GlassBackdrop />
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-slate-800">Subjects</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Manage the courses you&apos;re taking this term.
-            </p>
-          </div>
-          <button onClick={openCreateForm} className="btn-primary gap-2">
-            <Plus className="h-4 w-4" />
-            Add Subject
-          </button>
+      {/* Fixed header */}
+      <div className="flex shrink-0 items-center justify-between pb-4">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-800">Subjects</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Manage the courses you&apos;re taking this term.
+          </p>
         </div>
+        <button onClick={openCreateForm} className="btn-primary gap-2">
+          <Plus className="h-4 w-4" />
+          Add Subject
+        </button>
+      </div>
 
+      {/* Scrollable body */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {subjects.length === 0 ? (
           <div className="glass-panel p-10 text-center text-sm text-slate-400">
             No subjects yet. Add your first subject to get started.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 pb-2 sm:grid-cols-2 lg:grid-cols-3">
             {subjects.map((subject) => (
               <SubjectCard
                 key={subject.id}
