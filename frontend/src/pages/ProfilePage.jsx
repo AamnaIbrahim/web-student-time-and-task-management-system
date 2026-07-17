@@ -8,30 +8,33 @@ function ProfilePage() {
   const { user, updateProfile } = useAuth();
 
   return (
-    <div className="relative">
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <GlassBackdrop />
 
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Profile</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Manage your account details and password.
-          </p>
-        </div>
+      {/* Fixed header */}
+      <div className="shrink-0 pb-4">
+        <h1 className="text-xl font-semibold text-slate-800">Profile</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Manage your account details and password.
+        </p>
+      </div>
 
-        {/* Profile summary header */}
-        <div className="glass-panel flex items-center gap-4 p-6">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-lg font-semibold text-white shadow-md">
-            {getInitials(user?.name)}
+      {/* Scrollable body */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-2xl space-y-6 pb-2">
+          <div className="glass-panel flex items-center gap-4 p-6">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-lg font-semibold text-white shadow-md">
+              {getInitials(user?.name)}
+            </div>
+            <div>
+              <p className="text-base font-semibold text-slate-800">{user?.name}</p>
+              <p className="text-sm text-slate-500">{user?.email}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-base font-semibold text-slate-800">{user?.name}</p>
-            <p className="text-sm text-slate-500">{user?.email}</p>
-          </div>
-        </div>
 
-        <ProfileInfoForm user={user} updateProfile={updateProfile} />
-        <ChangePasswordForm updateProfile={updateProfile} />
+          <ProfileInfoForm user={user} updateProfile={updateProfile} />
+          <ChangePasswordForm updateProfile={updateProfile} />
+        </div>
       </div>
     </div>
   );
@@ -47,8 +50,6 @@ function ProfileInfoForm({ user, updateProfile }) {
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { name: "", email: "" } });
 
-  // Sync the form once the user is available (auth hydration finishes
-  // slightly after the initial render).
   useEffect(() => {
     if (user) {
       reset({ name: user.name, email: user.email });
