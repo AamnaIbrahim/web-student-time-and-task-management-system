@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
@@ -9,8 +11,21 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Core middleware
-app.use(cors());
+// Security headers
+app.use(helmet());
+
+// CORS
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim());
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(express.json()); // parses incoming JSON request bodies
 
 // Routes
