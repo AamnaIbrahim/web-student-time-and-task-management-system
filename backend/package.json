@@ -12,9 +12,11 @@
   "license": "ISC",
   "description": "Backend API for the Student Time and Task Management System",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.7.4"
   },
   "devDependencies": {
