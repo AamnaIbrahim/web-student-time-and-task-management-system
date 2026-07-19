@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import subjectRoutes from "./routes/subjectRoutes.js";
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.json()); // parses incoming JSON request bodies
 // Routes
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
-// app.use("/api/subjects", subjectRoutes);
+app.use("/api/subjects", subjectRoutes);
 // app.use("/api/tasks", taskRoutes);
 
 // 404 fallback for unmatched routes
