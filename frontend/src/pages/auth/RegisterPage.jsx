@@ -46,7 +46,7 @@ function RegisterPage() {
             id="name"
             type="text"
             autoComplete="name"
-            placeholder="Ahmad Raza"
+            placeholder="Enter your name"
             className="input-field"
             {...register("name", { required: "Name is required" })}
           />
@@ -63,7 +63,7 @@ function RegisterPage() {
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="you@student.edu"
+            placeholder="you@example.com"
             className="input-field"
             {...register("email", {
               required: "Email is required",

@@ -46,7 +46,7 @@ function LoginPage() {
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="you@student.edu"
+            placeholder="you@example.com"
             className="input-field"
             {...register("email", {
               required: "Email is required",

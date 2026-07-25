@@ -1,37 +1,36 @@
-import { mockResolve, mockReject } from "../utils/mockApiHelper";
-import { mockUser } from "../mockData/user";
+import apiClient from "./apiClient";
 
-let currentUser = { ...mockUser };
-
+/**
+ * @param {{ email: string, password: string }} credentials
+ * @returns {Promise<{ data: { user: object, token: string } }>}
+ */
 export function login({ email, password }) {
-  if (email === currentUser.email && password === currentUser.password) {
-    const { password: _password, ...safeUser } = currentUser;
-    return mockResolve({ user: safeUser, token: "mock-token-123" });
-  }
-  return mockReject("Invalid email or password.");
+  return apiClient.post("/auth/login", { email, password });
 }
 
+/**
+ * @param {{ name: string, email: string, password: string }} details
+ * @returns {Promise<{ data: { user: object, token: string } }>}
+ */
 export function register({ name, email, password }) {
-  if (!name || !email || !password) {
-    return mockReject("All fields are required.");
-  }
-
-  currentUser = { id: currentUser.id, name, email, password };
-  const { password: _password, ...safeUser } = currentUser;
-  return mockResolve({ user: safeUser, token: "mock-token-123" });
+  return apiClient.post("/auth/register", { name, email, password });
 }
 
+/**
+ * @returns {Promise<{ data: object }>} the currently logged-in user
+ */
 export function getCurrentUser() {
-  const { password: _password, ...safeUser } = currentUser;
-  return mockResolve(safeUser);
+  return apiClient.get("/auth/me");
 }
 
+/**
+ * @param {{ name?: string, email?: string, password?: string }} updates
+ * @returns {Promise<{ data: object }>} updated user
+ */
 export function updateProfile(updates) {
-  currentUser = { ...currentUser, ...updates };
-  const { password: _password, ...safeUser } = currentUser;
-  return mockResolve(safeUser);
+  return apiClient.put("/auth/profile", updates);
 }
 
 export function logout() {
-  return mockResolve(null, 200);
+  return Promise.resolve();
 }

@@ -2,8 +2,7 @@ import { createContext, useEffect, useReducer, useCallback } from "react";
 import { authReducer, initialAuthState } from "./authReducer";
 import { AUTH_ACTIONS } from "./authActionTypes";
 import * as authService from "../services/authService";
-
-const SESSION_KEY = "stms_session_token";
+import { API_CONFIG } from "../constants/apiConfig";
 
 export const AuthContext = createContext(null);
 
@@ -11,7 +10,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
 
   useEffect(() => {
-    const token = localStorage.getItem(SESSION_KEY);
+    const token = localStorage.getItem(API_CONFIG.SESSION_TOKEN_KEY);
 
     if (!token) {
       dispatch({ type: AUTH_ACTIONS.HYDRATE_END });
@@ -24,7 +23,7 @@ export function AuthProvider({ children }) {
         dispatch({ type: AUTH_ACTIONS.AUTH_SUCCESS, payload: res.data });
       })
       .catch(() => {
-        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(API_CONFIG.SESSION_TOKEN_KEY);
         dispatch({ type: AUTH_ACTIONS.HYDRATE_END });
       });
   }, []);
@@ -33,7 +32,7 @@ export function AuthProvider({ children }) {
     dispatch({ type: AUTH_ACTIONS.AUTH_START });
     try {
       const res = await authService.login(credentials);
-      localStorage.setItem(SESSION_KEY, res.data.token);
+      localStorage.setItem(API_CONFIG.SESSION_TOKEN_KEY, res.data.token);
       dispatch({ type: AUTH_ACTIONS.AUTH_SUCCESS, payload: res.data.user });
       return res.data.user;
     } catch (err) {
@@ -46,7 +45,7 @@ export function AuthProvider({ children }) {
     dispatch({ type: AUTH_ACTIONS.AUTH_START });
     try {
       const res = await authService.register(details);
-      localStorage.setItem(SESSION_KEY, res.data.token);
+      localStorage.setItem(API_CONFIG.SESSION_TOKEN_KEY, res.data.token);
       dispatch({ type: AUTH_ACTIONS.AUTH_SUCCESS, payload: res.data.user });
       return res.data.user;
     } catch (err) {
@@ -68,7 +67,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     await authService.logout();
-    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(API_CONFIG.SESSION_TOKEN_KEY);
     dispatch({ type: AUTH_ACTIONS.LOGOUT });
   }, []);
 

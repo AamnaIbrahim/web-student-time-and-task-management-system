@@ -1,55 +1,51 @@
-import { mockResolve, mockReject, generateMockId } from "../utils/mockApiHelper";
-import { mockTasks, TASK_STATUS } from "../mockData/tasks";
+import apiClient from "./apiClient";
 
-let tasks = [...mockTasks];
-
+/**
+ * @returns {Promise<{ data: object[] }>}
+ */
 export function getTasks() {
-  return mockResolve([...tasks]);
+  return apiClient.get("/tasks");
 }
 
+/**
+ * @param {string} id
+ * @returns {Promise<{ data: object }>}
+ */
 export function getTaskById(id) {
-  const task = tasks.find((t) => t.id === id);
-  if (!task) {
-    return mockReject("Task not found.");
-  }
-  return mockResolve(task);
+  return apiClient.get(`/tasks/${id}`);
 }
 
+/**
+ * @param {object} taskData - title, description, subjectId, priority, dueDate, dueTime, status
+ * @returns {Promise<{ data: object }>}
+ */
 export function createTask(taskData) {
-  if (!taskData.title || !taskData.subjectId || !taskData.dueDate) {
-    return mockReject("Title, subject, and due date are required.");
-  }
-
-  const newTask = {
-    id: generateMockId(),
-    status: TASK_STATUS.PENDING,
-    ...taskData,
-  };
-  tasks = [...tasks, newTask];
-  return mockResolve(newTask);
+  return apiClient.post("/tasks", taskData);
 }
 
+/**
+ * @param {string} id
+ * @param {object} updates
+ * @returns {Promise<{ data: object }>}
+ */
 export function updateTask(id, updates) {
-  const index = tasks.findIndex((t) => t.id === id);
-  if (index === -1) {
-    return mockReject("Task not found.");
-  }
-
-  const updatedTask = { ...tasks[index], ...updates };
-  tasks = tasks.map((t) => (t.id === id ? updatedTask : t));
-  return mockResolve(updatedTask);
+  return apiClient.put(`/tasks/${id}`, updates);
 }
 
+/**
+ * @param {string} id
+ * @returns {Promise<{ data: { id: string } }>}
+ */
 export function deleteTask(id) {
-  const exists = tasks.some((t) => t.id === id);
-  if (!exists) {
-    return mockReject("Task not found.");
-  }
-
-  tasks = tasks.filter((t) => t.id !== id);
-  return mockResolve({ id });
+  return apiClient.delete(`/tasks/${id}`);
 }
 
+/**
+ * Convenience helper for the Task Management module's status toggle.
+ * @param {string} id
+ * @param {string} status - "Pending" | "Completed"
+ * @returns {Promise<{ data: object }>}
+ */
 export function updateTaskStatus(id, status) {
   return updateTask(id, { status });
 }
