@@ -1,51 +1,41 @@
-import { mockResolve, mockReject, generateMockId } from "../utils/mockApiHelper";
-import { mockSubjects } from "../mockData/subjects";
+import apiClient from "./apiClient";
 
-let subjects = [...mockSubjects];
-
+/**
+ * @returns {Promise<{ data: object[] }>}
+ */
 export function getSubjects() {
-  return mockResolve([...subjects]);
+  return apiClient.get("/subjects");
 }
 
+/**
+ * @param {string} id
+ * @returns {Promise<{ data: object }>}
+ */
 export function getSubjectById(id) {
-  const subject = subjects.find((s) => s.id === id);
-  if (!subject) {
-    return mockReject("Subject not found.");
-  }
-  return mockResolve(subject);
+  return apiClient.get(`/subjects/${id}`);
 }
 
+/**
+ * @param {{ name: string, code: string, instructor: string, color?: string }} subjectData
+ * @returns {Promise<{ data: object }>}
+ */
 export function createSubject(subjectData) {
-  if (!subjectData.name || !subjectData.code) {
-    return mockReject("Subject name and code are required.");
-  }
-
-  const newSubject = {
-    id: generateMockId(),
-    color: "#4672d1",
-    ...subjectData,
-  };
-  subjects = [...subjects, newSubject];
-  return mockResolve(newSubject);
+  return apiClient.post("/subjects", subjectData);
 }
 
+/**
+ * @param {string} id
+ * @param {object} updates
+ * @returns {Promise<{ data: object }>}
+ */
 export function updateSubject(id, updates) {
-  const index = subjects.findIndex((s) => s.id === id);
-  if (index === -1) {
-    return mockReject("Subject not found.");
-  }
-
-  const updatedSubject = { ...subjects[index], ...updates };
-  subjects = subjects.map((s) => (s.id === id ? updatedSubject : s));
-  return mockResolve(updatedSubject);
+  return apiClient.put(`/subjects/${id}`, updates);
 }
 
+/**
+ * @param {string} id
+ * @returns {Promise<{ data: { id: string } }>}
+ */
 export function deleteSubject(id) {
-  const exists = subjects.some((s) => s.id === id);
-  if (!exists) {
-    return mockReject("Subject not found.");
-  }
-
-  subjects = subjects.filter((s) => s.id !== id);
-  return mockResolve({ id });
+  return apiClient.delete(`/subjects/${id}`);
 }
