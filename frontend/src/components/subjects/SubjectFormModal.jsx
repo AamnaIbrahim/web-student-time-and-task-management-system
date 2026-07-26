@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "../common/Modal";
+import CharCount from "../common/CharCount";
 
 const COLOR_OPTIONS = [
   "#4672d1",
@@ -37,6 +38,9 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
   }, [isOpen, initialData, reset]);
 
   const selectedColor = watch("color");
+  const nameValue = watch("name") || "";
+  const codeValue = watch("code") || "";
+  const instructorValue = watch("instructor") || "";
 
   const submitHandler = async (data) => {
     await onSubmit(data);
@@ -60,7 +64,10 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
               maxLength: { value: NAME_MAX_LENGTH, message: `Name must be under ${NAME_MAX_LENGTH} characters` },
             })}
           />
-          {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {errors.name ? <p className="text-xs text-red-500">{errors.name.message}</p> : <span />}
+            <CharCount value={nameValue} max={NAME_MAX_LENGTH} />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -78,7 +85,10 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
                 maxLength: { value: CODE_MAX_LENGTH, message: `Under ${CODE_MAX_LENGTH} characters` },
               })}
             />
-            {errors.code && <p className="mt-1 text-xs text-red-500">{errors.code.message}</p>}
+            <div className="mt-1 flex items-center justify-between gap-2">
+              {errors.code ? <p className="text-xs text-red-500">{errors.code.message}</p> : <span />}
+              <CharCount value={codeValue} max={CODE_MAX_LENGTH} />
+            </div>
           </div>
           <div>
             <label htmlFor="instructor" className="label-text">
@@ -97,9 +107,14 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
                 },
               })}
             />
-            {errors.instructor && (
-              <p className="mt-1 text-xs text-red-500">{errors.instructor.message}</p>
-            )}
+            <div className="mt-1 flex items-center justify-between gap-2">
+              {errors.instructor ? (
+                <p className="text-xs text-red-500">{errors.instructor.message}</p>
+              ) : (
+                <span />
+              )}
+              <CharCount value={instructorValue} max={INSTRUCTOR_MAX_LENGTH} />
+            </div>
           </div>
         </div>
 
