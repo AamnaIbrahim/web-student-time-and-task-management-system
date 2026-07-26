@@ -101,10 +101,6 @@ function LoginPage() {
           Register
         </Link>
       </p>
-
-      <p className="mt-4 text-center text-[11px] text-slate-400">
-        Demo credentials: ahmad.raza@student.edu / password123
-      </p>
     </div>
   );
 }

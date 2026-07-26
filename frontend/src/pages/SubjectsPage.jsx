@@ -1,19 +1,24 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useSubjects } from "../hooks/useSubjects";
+import { ROUTES } from "../constants/routePaths";
 import GlassBackdrop from "../components/common/GlassBackdrop";
 import LoadingState from "../components/common/LoadingState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import SuccessDialog from "../components/common/SuccessDialog";
 import SubjectCard from "../components/subjects/SubjectCard";
 import SubjectFormModal from "../components/subjects/SubjectFormModal";
 
 function SubjectsPage() {
   const { subjects, loading, addSubject, editSubject, removeSubject } = useSubjects();
+  const navigate = useNavigate();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
   const [deletingSubject, setDeletingSubject] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showFirstSubjectDialog, setShowFirstSubjectDialog] = useState(false);
 
   const openCreateForm = () => {
     setEditingSubject(null);
@@ -26,10 +31,16 @@ function SubjectsPage() {
   };
 
   const handleFormSubmit = async (data) => {
+    const isFirstSubject = !editingSubject && subjects.length === 0;
+
     if (editingSubject) {
       await editSubject(editingSubject.id, data);
     } else {
       await addSubject(data);
+    }
+
+    if (isFirstSubject) {
+      setShowFirstSubjectDialog(true);
     }
   };
 
@@ -97,6 +108,15 @@ function SubjectsPage() {
         title="Delete Subject"
         message={`Are you sure you want to delete "${deletingSubject?.name}"? This action cannot be undone.`}
         isLoading={isDeleting}
+      />
+
+      <SuccessDialog
+        isOpen={showFirstSubjectDialog}
+        onClose={() => setShowFirstSubjectDialog(false)}
+        title="Subject Added"
+        message="Great start! Now add your first task to begin tracking your work."
+        actionLabel="Add a Task"
+        onAction={() => navigate(ROUTES.TASKS)}
       />
     </div>
   );

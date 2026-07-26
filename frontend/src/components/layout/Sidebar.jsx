@@ -4,15 +4,33 @@ import { Menu, X, LogOut } from "lucide-react";
 import { NAV_ITEMS } from "../../constants/navItems";
 import { ROUTES } from "../../constants/routePaths";
 import { useAuth } from "../../hooks/useAuth";
+import { useSubjects } from "../../hooks/useSubjects";
+import { useTasks } from "../../hooks/useTasks";
 import { useLockBodyScroll } from "../../hooks/useLockBodyScroll";
 import { getInitials } from "../../utils/stringHelpers";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { subjects } = useSubjects();
+  const { tasks } = useTasks();
   const navigate = useNavigate();
 
   useLockBodyScroll(isOpen);
+
+  const hasSubjects = subjects.length > 0;
+  const hasTasks = tasks.length > 0;
+
+  function getDisabledReason(path) {
+    if (path === ROUTES.TASKS && !hasSubjects) {
+      return "Add your first subject to get started";
+    }
+    if (path === ROUTES.DASHBOARD) {
+      if (!hasSubjects) return "Add your first subject to get started";
+      if (!hasTasks) return "Add your first task to unlock the dashboard";
+    }
+    return null;
+  }
 
   const handleLogout = async () => {
     await logout();
@@ -33,6 +51,56 @@ function Sidebar() {
         : "text-slate-500 hover:bg-surface-100 hover:text-slate-700"
     }`;
 
+  function renderFullNavItem(item, onNavigate) {
+    const Icon = item.icon;
+    const disabledReason = getDisabledReason(item.path);
+
+    if (disabledReason) {
+      return (
+        <div key={item.path} className="group relative">
+          <div className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300">
+            <Icon className="h-5 w-5" />
+            {item.label}
+          </div>
+          <div className="pointer-events-none absolute left-full top-1/2 z-10 ml-2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+            {disabledReason}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <NavLink key={item.path} to={item.path} onClick={onNavigate} className={navLinkClasses}>
+        <Icon className="h-5 w-5" />
+        {item.label}
+      </NavLink>
+    );
+  }
+
+  function renderRailNavItem(item) {
+    const Icon = item.icon;
+    const disabledReason = getDisabledReason(item.path);
+
+    if (disabledReason) {
+      return (
+        <div key={item.path} className="group relative">
+          <div className="flex h-11 w-11 cursor-not-allowed items-center justify-center rounded-xl text-slate-300">
+            <Icon className="h-5 w-5" />
+          </div>
+          <div className="pointer-events-none absolute left-full top-1/2 z-10 ml-2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+            {disabledReason}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <NavLink key={item.path} to={item.path} className={railLinkClasses} aria-label={item.label}>
+        <Icon className="h-5 w-5" />
+      </NavLink>
+    );
+  }
+
   const fullContent = (onNavigate = () => {}) => (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-5">
@@ -47,15 +115,7 @@ function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink key={item.path} to={item.path} onClick={onNavigate} className={navLinkClasses}>
-              <Icon className="h-5 w-5" />
-              {item.label}
-            </NavLink>
-          );
-        })}
+        {NAV_ITEMS.map((item) => renderFullNavItem(item, onNavigate))}
       </nav>
 
       <div className="border-t border-surface-200 p-3">
@@ -98,14 +158,7 @@ function Sidebar() {
         </button>
 
         <nav className="flex flex-1 flex-col items-center gap-1">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink key={item.path} to={item.path} className={railLinkClasses} aria-label={item.label}>
-                <Icon className="h-5 w-5" />
-              </NavLink>
-            );
-          })}
+          {NAV_ITEMS.map((item) => renderRailNavItem(item))}
         </nav>
 
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-xs font-semibold text-primary-700">

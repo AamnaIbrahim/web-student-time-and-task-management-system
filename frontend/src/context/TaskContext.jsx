@@ -2,11 +2,13 @@ import { createContext, useEffect, useReducer, useCallback } from "react";
 import { taskReducer, initialTaskState } from "./taskReducer";
 import { TASK_ACTIONS } from "./taskActionTypes";
 import * as taskService from "../services/taskService";
+import { useAuth } from "../hooks/useAuth";
 
 export const TaskContext = createContext(null);
 
 export function TaskProvider({ children }) {
   const [state, dispatch] = useReducer(taskReducer, initialTaskState);
+  const { isAuthenticated } = useAuth();
 
   const fetchTasks = useCallback(async () => {
     dispatch({ type: TASK_ACTIONS.FETCH_START });
@@ -19,8 +21,10 @@ export function TaskProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    if (isAuthenticated) {
+      fetchTasks();
+    }
+  }, [isAuthenticated, fetchTasks]);
 
   const addTask = useCallback(async (taskData) => {
     const res = await taskService.createTask(taskData);

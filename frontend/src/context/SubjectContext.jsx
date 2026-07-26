@@ -2,11 +2,13 @@ import { createContext, useEffect, useReducer, useCallback } from "react";
 import { subjectReducer, initialSubjectState } from "./subjectReducer";
 import { SUBJECT_ACTIONS } from "./subjectActionTypes";
 import * as subjectService from "../services/subjectService";
+import { useAuth } from "../hooks/useAuth";
 
 export const SubjectContext = createContext(null);
 
 export function SubjectProvider({ children }) {
   const [state, dispatch] = useReducer(subjectReducer, initialSubjectState);
+  const { isAuthenticated } = useAuth();
 
   const fetchSubjects = useCallback(async () => {
     dispatch({ type: SUBJECT_ACTIONS.FETCH_START });
@@ -18,9 +20,12 @@ export function SubjectProvider({ children }) {
     }
   }, []);
 
+
   useEffect(() => {
-    fetchSubjects();
-  }, [fetchSubjects]);
+    if (isAuthenticated) {
+      fetchSubjects();
+    }
+  }, [isAuthenticated, fetchSubjects]);
 
   const addSubject = useCallback(async (subjectData) => {
     const res = await subjectService.createSubject(subjectData);

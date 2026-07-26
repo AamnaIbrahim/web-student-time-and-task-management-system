@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../constants/routePaths";
+import SuccessDialog from "../../components/common/SuccessDialog";
 
 function RegisterPage() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     register,
@@ -22,11 +24,13 @@ function RegisterPage() {
     setServerError("");
     try {
       await registerUser({ name, email, password });
-      navigate(ROUTES.DASHBOARD, { replace: true });
+      setShowSuccess(true);
     } catch (err) {
       setServerError(err.message || "Unable to register. Please try again.");
     }
   };
+
+  const goToLogin = () => navigate(ROUTES.LOGIN, { replace: true });
 
   return (
     <div className="glass-card animate-fade-in-up p-8">
@@ -90,12 +94,21 @@ function RegisterPage() {
             className="input-field"
             {...register("password", {
               required: "Password is required",
-              minLength: { value: 6, message: "At least 6 characters" },
+              minLength: { value: 8, message: "Password must be at least 8 characters" },
+              validate: {
+                hasUpperCase: (value) =>
+                  /[A-Z]/.test(value) || "Password must include at least one uppercase letter",
+                hasNumber: (value) =>
+                  /[0-9]/.test(value) || "Password must include at least one number",
+              },
             })}
           />
           {errors.password && (
             <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
           )}
+          <p className="mt-1 text-xs text-slate-400">
+            At least 8 characters, with one uppercase letter and one number.
+          </p>
         </div>
 
         <div>
@@ -138,6 +151,15 @@ function RegisterPage() {
           Log in
         </Link>
       </p>
+
+      <SuccessDialog
+        isOpen={showSuccess}
+        onClose={goToLogin}
+        title="Account Created"
+        message="Your account has been created successfully. Please log in to continue."
+        actionLabel="Go to Login"
+        onAction={goToLogin}
+      />
     </div>
   );
 }
