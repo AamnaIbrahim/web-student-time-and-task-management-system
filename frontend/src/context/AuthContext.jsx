@@ -45,8 +45,7 @@ export function AuthProvider({ children }) {
     dispatch({ type: AUTH_ACTIONS.AUTH_START });
     try {
       const res = await authService.register(details);
-      localStorage.setItem(API_CONFIG.SESSION_TOKEN_KEY, res.data.token);
-      dispatch({ type: AUTH_ACTIONS.AUTH_SUCCESS, payload: res.data.user });
+      dispatch({ type: AUTH_ACTIONS.HYDRATE_END });
       return res.data.user;
     } catch (err) {
       dispatch({ type: AUTH_ACTIONS.AUTH_FAILURE, payload: err.message });

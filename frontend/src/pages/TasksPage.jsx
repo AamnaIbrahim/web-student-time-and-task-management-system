@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useTasks } from "../hooks/useTasks";
 import { useSubjects } from "../hooks/useSubjects";
 import { isToday, isUpcomingWithin } from "../utils/dateHelpers";
+import { ROUTES } from "../constants/routePaths";
 import GlassBackdrop from "../components/common/GlassBackdrop";
 import LoadingState from "../components/common/LoadingState";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import SuccessDialog from "../components/common/SuccessDialog";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskFormModal from "../components/tasks/TaskFormModal";
 
@@ -21,6 +24,7 @@ function isWithinRange(dueDate, range) {
 function TasksPage() {
   const { tasks, loading: tasksLoading, addTask, editTask, removeTask, toggleTaskStatus } = useTasks();
   const { subjects, loading: subjectsLoading } = useSubjects();
+  const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState("All");
   const [subjectFilter, setSubjectFilter] = useState("All");
@@ -32,6 +36,7 @@ function TasksPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [deletingTask, setDeletingTask] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showFirstTaskDialog, setShowFirstTaskDialog] = useState(false);
 
   const subjectsById = useMemo(
     () => Object.fromEntries(subjects.map((s) => [s.id, s])),
@@ -75,10 +80,16 @@ function TasksPage() {
   };
 
   const handleFormSubmit = async (data) => {
+    const isFirstTask = !editingTask && tasks.length === 0;
+
     if (editingTask) {
       await editTask(editingTask.id, data);
     } else {
       await addTask(data);
+    }
+
+    if (isFirstTask) {
+      setShowFirstTaskDialog(true);
     }
   };
 
@@ -184,7 +195,7 @@ function TasksPage() {
         </div>
       </div>
 
-      {/* Scrollable body*/}
+      {/* Scrollable body */}
       <div className="min-h-0 flex-1 overflow-y-auto">
         {visibleTasks.length === 0 ? (
           <div className="glass-panel p-10 text-center text-sm text-slate-400">
@@ -220,6 +231,15 @@ function TasksPage() {
         title="Delete Task"
         message={`Are you sure you want to delete "${deletingTask?.title}"? This action cannot be undone.`}
         isLoading={isDeleting}
+      />
+
+      <SuccessDialog
+        isOpen={showFirstTaskDialog}
+        onClose={() => setShowFirstTaskDialog(false)}
+        title="Task Added"
+        message="Nice! Your dashboard is now ready with real data."
+        actionLabel="Go to Dashboard"
+        onAction={() => navigate(ROUTES.DASHBOARD)}
       />
     </div>
   );
