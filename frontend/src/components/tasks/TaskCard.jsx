@@ -65,7 +65,8 @@ function TaskCard({ task, subject, onEdit, onDelete, onToggleStatus }) {
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span
-              className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white"
+              title={subject?.name || "General"}
+              className="max-w-[160px] truncate rounded-full px-2.5 py-1 text-[11px] font-medium text-white sm:max-w-[220px]"
               style={{ backgroundColor: subject?.color || "#94a3b8" }}
             >
               {subject?.name || "General"}

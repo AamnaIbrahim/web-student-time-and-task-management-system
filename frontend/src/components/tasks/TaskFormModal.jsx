@@ -1,6 +1,8 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { ChevronDown, Check } from "lucide-react";
 import Modal from "../common/Modal";
+import CharCount from "../common/CharCount";
 import { useSubjects } from "../../hooks/useSubjects";
 
 const EMPTY_VALUES = {
@@ -23,6 +25,62 @@ function getTodayDateString() {
   return `${year}-${month}-${day}`;
 }
 
+function SubjectPicker({ subjects, value, onChange, hasError }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selected = subjects.find((s) => s.id === value);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        className={`input-field flex items-center justify-between gap-2 text-left ${
+          hasError ? "border-red-300" : ""
+        }`}
+      >
+        <span className={`truncate ${selected ? "text-slate-800" : "text-slate-400"}`}>
+          {selected ? selected.name : "Select a subject"}
+        </span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {isOpen && (
+        <>
+          {/* Click-outside overlay to close the dropdown */}
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+
+          <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-surface-200 bg-white p-1 shadow-lg">
+            {subjects.map((subject) => (
+              <button
+                type="button"
+                key={subject.id}
+                onClick={() => {
+                  onChange(subject.id);
+                  setIsOpen(false);
+                }}
+                className={`flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-sm leading-snug transition-colors hover:bg-surface-100 ${
+                  subject.id === value ? "bg-primary-50 text-primary-700" : "text-slate-700"
+                }`}
+              >
+                <span
+                  className="mt-1 h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: subject.color }}
+                />
+                <span className="min-w-0 flex-1 whitespace-normal break-words">
+                  {subject.name}
+                </span>
+                {subject.id === value && (
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
+                )}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
   const { subjects } = useSubjects();
   const isEditMode = Boolean(initialData);
@@ -32,6 +90,8 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
     register,
     handleSubmit,
     reset,
+    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: EMPTY_VALUES });
 
@@ -40,6 +100,9 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
       reset(initialData || { ...EMPTY_VALUES, subjectId: subjects[0]?.id || "" });
     }
   }, [isOpen, initialData, reset, subjects]);
+
+  const titleValue = watch("title") || "";
+  const descriptionValue = watch("description") || "";
 
   const submitHandler = async (data) => {
     await onSubmit(data);
@@ -63,7 +126,10 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
               maxLength: { value: TITLE_MAX_LENGTH, message: `Title must be under ${TITLE_MAX_LENGTH} characters` },
             })}
           />
-          {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {errors.title ? <p className="text-xs text-red-500">{errors.title.message}</p> : <span />}
+            <CharCount value={titleValue} max={TITLE_MAX_LENGTH} />
+          </div>
         </div>
 
         <div>
@@ -83,29 +149,31 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
               },
             })}
           />
-          {errors.description && (
-            <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
-          )}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {errors.description ? (
+              <p className="text-xs text-red-500">{errors.description.message}</p>
+            ) : (
+              <span />
+            )}
+            <CharCount value={descriptionValue} max={DESCRIPTION_MAX_LENGTH} />
+          </div>
         </div>
 
         <div>
-          <label htmlFor="subjectId" className="label-text">
-            Subject
-          </label>
-          <select
-            id="subjectId"
-            className="input-field"
-            {...register("subjectId", { required: "Subject is required" })}
-          >
-            <option value="" disabled>
-              Select a subject
-            </option>
-            {subjects.map((subject) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.name}
-              </option>
-            ))}
-          </select>
+          <label className="label-text">Subject</label>
+          <Controller
+            name="subjectId"
+            control={control}
+            rules={{ required: "Subject is required" }}
+            render={({ field }) => (
+              <SubjectPicker
+                subjects={subjects}
+                value={field.value}
+                onChange={field.onChange}
+                hasError={Boolean(errors.subjectId)}
+              />
+            )}
+          />
           {errors.subjectId && (
             <p className="mt-1 text-xs text-red-500">{errors.subjectId.message}</p>
           )}
