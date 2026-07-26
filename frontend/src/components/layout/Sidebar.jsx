@@ -164,6 +164,14 @@ function Sidebar() {
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-xs font-semibold text-primary-700">
           {getInitials(user?.name)}
         </div>
+
+        <button
+          onClick={handleLogout}
+          className="mt-3 flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+          aria-label="Logout"
+        >
+          <LogOut className="h-5 w-5" />
+        </button>
       </aside>
 
       {/* Expandable full drawer (mobile/tablet), triggered from the rail's hamburger */}
