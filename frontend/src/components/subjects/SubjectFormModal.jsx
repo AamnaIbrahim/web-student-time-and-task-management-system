@@ -14,6 +14,10 @@ const COLOR_OPTIONS = [
 
 const EMPTY_VALUES = { name: "", code: "", instructor: "", color: COLOR_OPTIONS[0] };
 
+const NAME_MAX_LENGTH = 80;
+const CODE_MAX_LENGTH = 15;
+const INSTRUCTOR_MAX_LENGTH = 60;
+
 function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
   const isEditMode = Boolean(initialData);
 
@@ -50,7 +54,11 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
             id="name"
             className="input-field"
             placeholder="Data Structures & Algorithms"
-            {...register("name", { required: "Subject name is required" })}
+            maxLength={NAME_MAX_LENGTH}
+            {...register("name", {
+              required: "Subject name is required",
+              maxLength: { value: NAME_MAX_LENGTH, message: `Name must be under ${NAME_MAX_LENGTH} characters` },
+            })}
           />
           {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
         </div>
@@ -64,7 +72,11 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
               id="code"
               className="input-field"
               placeholder="CS-201"
-              {...register("code", { required: "Code is required" })}
+              maxLength={CODE_MAX_LENGTH}
+              {...register("code", {
+                required: "Code is required",
+                maxLength: { value: CODE_MAX_LENGTH, message: `Under ${CODE_MAX_LENGTH} characters` },
+              })}
             />
             {errors.code && <p className="mt-1 text-xs text-red-500">{errors.code.message}</p>}
           </div>
@@ -76,7 +88,14 @@ function SubjectFormModal({ isOpen, onClose, onSubmit, initialData }) {
               id="instructor"
               className="input-field"
               placeholder="Dr. Sarah Khan"
-              {...register("instructor", { required: "Instructor is required" })}
+              maxLength={INSTRUCTOR_MAX_LENGTH}
+              {...register("instructor", {
+                required: "Instructor is required",
+                maxLength: {
+                  value: INSTRUCTOR_MAX_LENGTH,
+                  message: `Under ${INSTRUCTOR_MAX_LENGTH} characters`,
+                },
+              })}
             />
             {errors.instructor && (
               <p className="mt-1 text-xs text-red-500">{errors.instructor.message}</p>

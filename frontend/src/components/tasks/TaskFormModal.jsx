@@ -12,9 +12,21 @@ const EMPTY_VALUES = {
   dueTime: "",
 };
 
+const TITLE_MAX_LENGTH = 100;
+const DESCRIPTION_MAX_LENGTH = 500;
+
+function getTodayDateString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
   const { subjects } = useSubjects();
   const isEditMode = Boolean(initialData);
+  const todayDateString = getTodayDateString();
 
   const {
     register,
@@ -45,7 +57,11 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
             id="title"
             className="input-field"
             placeholder="Assignment 3 - Binary Trees"
-            {...register("title", { required: "Title is required" })}
+            maxLength={TITLE_MAX_LENGTH}
+            {...register("title", {
+              required: "Title is required",
+              maxLength: { value: TITLE_MAX_LENGTH, message: `Title must be under ${TITLE_MAX_LENGTH} characters` },
+            })}
           />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
         </div>
@@ -57,10 +73,19 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
           <textarea
             id="description"
             rows={3}
+            maxLength={DESCRIPTION_MAX_LENGTH}
             className="input-field resize-none"
             placeholder="Optional details about the task"
-            {...register("description")}
+            {...register("description", {
+              maxLength: {
+                value: DESCRIPTION_MAX_LENGTH,
+                message: `Description must be under ${DESCRIPTION_MAX_LENGTH} characters`,
+              },
+            })}
           />
+          {errors.description && (
+            <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
+          )}
         </div>
 
         <div>
@@ -105,8 +130,13 @@ function TaskFormModal({ isOpen, onClose, onSubmit, initialData }) {
             <input
               id="dueDate"
               type="date"
+              min={todayDateString}
               className="input-field"
-              {...register("dueDate", { required: "Due date is required" })}
+              {...register("dueDate", {
+                required: "Due date is required",
+                validate: (value) =>
+                  value >= todayDateString || "Due date cannot be in the past",
+              })}
             />
             {errors.dueDate && (
               <p className="mt-1 text-xs text-red-500">{errors.dueDate.message}</p>
