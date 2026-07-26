@@ -28,13 +28,16 @@ function TaskCard({ task, subject, onEdit, onDelete, onToggleStatus }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3
-              className={`text-sm font-semibold ${
-                isCompleted ? "text-slate-400 line-through" : "text-slate-800"
-              }`}
-            >
-              {task.title}
-            </h3>
+            <div className="min-w-0 flex-1">
+              <h3
+                title={task.title}
+                className={`truncate text-sm font-semibold ${
+                  isCompleted ? "text-slate-400 line-through" : "text-slate-800"
+                }`}
+              >
+                {task.title}
+              </h3>
+            </div>
 
             <div className="flex shrink-0 gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <button
@@ -55,7 +58,9 @@ function TaskCard({ task, subject, onEdit, onDelete, onToggleStatus }) {
           </div>
 
           {task.description && (
-            <p className="mt-1 line-clamp-2 text-xs text-slate-400">{task.description}</p>
+            <p className="mt-1 whitespace-pre-wrap break-words text-xs text-slate-400">
+              {task.description}
+            </p>
           )}
 
           <div className="mt-3 flex flex-wrap items-center gap-2">

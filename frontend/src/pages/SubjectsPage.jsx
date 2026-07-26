@@ -9,6 +9,7 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import SuccessDialog from "../components/common/SuccessDialog";
 import SubjectCard from "../components/subjects/SubjectCard";
 import SubjectFormModal from "../components/subjects/SubjectFormModal";
+import SubjectDetailDialog from "../components/subjects/SubjectDetailDialog";
 
 function SubjectsPage() {
   const { subjects, loading, addSubject, editSubject, removeSubject } = useSubjects();
@@ -17,6 +18,7 @@ function SubjectsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
   const [deletingSubject, setDeletingSubject] = useState(null);
+  const [viewingSubject, setViewingSubject] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFirstSubjectDialog, setShowFirstSubjectDialog] = useState(false);
 
@@ -88,6 +90,7 @@ function SubjectsPage() {
                 subject={subject}
                 onEdit={openEditForm}
                 onDelete={setDeletingSubject}
+                onView={setViewingSubject}
               />
             ))}
           </div>
@@ -118,6 +121,8 @@ function SubjectsPage() {
         actionLabel="Add a Task"
         onAction={() => navigate(ROUTES.TASKS)}
       />
+
+      <SubjectDetailDialog subject={viewingSubject} onClose={() => setViewingSubject(null)} />
     </div>
   );
 }
