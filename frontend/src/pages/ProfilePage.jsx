@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../hooks/useAuth";
 import { getInitials } from "../utils/stringHelpers";
 import GlassBackdrop from "../components/common/GlassBackdrop";
+import CharCount from "../components/common/CharCount";
+
+const NAME_MAX_LENGTH = 50;
 
 function ProfilePage() {
   const { user, updateProfile } = useAuth();
@@ -22,13 +25,14 @@ function ProfilePage() {
       {/* Scrollable body */}
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl space-y-6 pb-2">
+          {/* Profile summary header */}
           <div className="glass-panel flex items-center gap-4 p-6">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-lg font-semibold text-white shadow-md">
               {getInitials(user?.name)}
             </div>
-            <div>
-              <p className="text-base font-semibold text-slate-800">{user?.name}</p>
-              <p className="text-sm text-slate-500">{user?.email}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-base font-semibold text-slate-800">{user?.name}</p>
+              <p className="truncate text-sm text-slate-500">{user?.email}</p>
             </div>
           </div>
 
@@ -42,11 +46,13 @@ function ProfilePage() {
 
 function ProfileInfoForm({ user, updateProfile }) {
   const [status, setStatus] = useState(null); // "success" | "error" | null
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { name: "", email: "" } });
 
@@ -56,13 +62,16 @@ function ProfileInfoForm({ user, updateProfile }) {
     }
   }, [user, reset]);
 
+  const nameValue = watch("name") || "";
+
   const onSubmit = async (data) => {
     setStatus(null);
     try {
       await updateProfile(data);
       setStatus("success");
       setTimeout(() => setStatus(null), 3000);
-    } catch {
+    } catch (err) {
+      setErrorMessage(err.message || "Something went wrong. Please try again.");
       setStatus("error");
     }
   };
@@ -80,9 +89,16 @@ function ProfileInfoForm({ user, updateProfile }) {
           <input
             id="name"
             className="input-field"
-            {...register("name", { required: "Name is required" })}
+            maxLength={NAME_MAX_LENGTH}
+            {...register("name", {
+              required: "Name is required",
+              maxLength: { value: NAME_MAX_LENGTH, message: `Name must be under ${NAME_MAX_LENGTH} characters` },
+            })}
           />
-          {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {errors.name ? <p className="text-xs text-red-500">{errors.name.message}</p> : <span />}
+            <CharCount value={nameValue} max={NAME_MAX_LENGTH} />
+          </div>
         </div>
 
         <div>
@@ -110,9 +126,7 @@ function ProfileInfoForm({ user, updateProfile }) {
           </p>
         )}
         {status === "error" && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">
-            Something went wrong. Please try again.
-          </p>
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{errorMessage}</p>
         )}
 
         <div className="flex justify-end">
@@ -127,6 +141,7 @@ function ProfileInfoForm({ user, updateProfile }) {
 
 function ChangePasswordForm({ updateProfile }) {
   const [status, setStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -145,7 +160,8 @@ function ChangePasswordForm({ updateProfile }) {
       setStatus("success");
       reset();
       setTimeout(() => setStatus(null), 3000);
-    } catch {
+    } catch (err) {
+      setErrorMessage(err.message || "Something went wrong. Please try again.");
       setStatus("error");
     }
   };
@@ -168,12 +184,21 @@ function ChangePasswordForm({ updateProfile }) {
             placeholder="••••••••"
             {...register("newPassword", {
               required: "New password is required",
-              minLength: { value: 6, message: "At least 6 characters" },
+              minLength: { value: 8, message: "Password must be at least 8 characters" },
+              validate: {
+                hasUpperCase: (value) =>
+                  /[A-Z]/.test(value) || "Password must include at least one uppercase letter",
+                hasNumber: (value) =>
+                  /[0-9]/.test(value) || "Password must include at least one number",
+              },
             })}
           />
           {errors.newPassword && (
             <p className="mt-1 text-xs text-red-500">{errors.newPassword.message}</p>
           )}
+          <p className="mt-1 text-xs text-slate-400">
+            At least 8 characters, with one uppercase letter and one number.
+          </p>
         </div>
 
         <div>
@@ -202,9 +227,7 @@ function ChangePasswordForm({ updateProfile }) {
           </p>
         )}
         {status === "error" && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">
-            Something went wrong. Please try again.
-          </p>
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{errorMessage}</p>
         )}
 
         <div className="flex justify-end">

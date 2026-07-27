@@ -24,6 +24,25 @@ export function isOverdue(dueDate) {
   return target.getTime() < today.getTime();
 }
 
+export function isWithinCurrentWeek(dueDate) {
+  const today = toDateOnly(new Date());
+  const target = toDateOnly(dueDate);
+
+  const startOfWeek = toDateOnly(today);
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // back to Sunday
+
+  const endOfWeek = toDateOnly(startOfWeek);
+  endOfWeek.setDate(endOfWeek.getDate() + 6); // forward to Saturday
+
+  return target.getTime() >= startOfWeek.getTime() && target.getTime() <= endOfWeek.getTime();
+}
+
+export function isWithinCurrentMonth(dueDate) {
+  const today = new Date(dueDate);
+  const now = new Date();
+  return today.getFullYear() === now.getFullYear() && today.getMonth() === now.getMonth();
+}
+
 export function formatDisplayDate(dueDate) {
   return new Date(dueDate).toLocaleDateString("en-US", {
     weekday: "short",

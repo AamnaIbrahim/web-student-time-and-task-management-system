@@ -9,6 +9,8 @@ import StatCard from "../components/dashboard/StatCard";
 import TaskListCard from "../components/dashboard/TaskListCard";
 import ProductivitySummary from "../components/dashboard/ProductivitySummary";
 
+const LIST_MAX_HEIGHT = "max-h-[220px]";
+
 function DashboardPage() {
   const { tasks, loading: tasksLoading } = useTasks();
   const { subjects, loading: subjectsLoading } = useSubjects();
@@ -23,10 +25,16 @@ function DashboardPage() {
     [tasks]
   );
 
-  const upcomingDeadlines = useMemo(
+  const upcomingThisWeek = useMemo(
     () => tasks.filter((t) => isUpcomingWithin(t.dueDate, 7) && t.status === "Pending"),
     [tasks]
   );
+  const upcomingThisMonth = useMemo(
+    () => tasks.filter((t) => isUpcomingWithin(t.dueDate, 30) && t.status === "Pending"),
+    [tasks]
+  );
+  const upcomingDeadlines = upcomingThisWeek.length > 0 ? upcomingThisWeek : upcomingThisMonth;
+  const upcomingRangeLabel = upcomingThisWeek.length > 0 ? "This Week" : "Next 30 days";
 
   const pendingTasks = useMemo(
     () => tasks.filter((t) => t.status === "Pending"),
@@ -70,16 +78,19 @@ function DashboardPage() {
               tasks={todaysTasks}
               subjectsById={subjectsById}
               emptyMessage="Nothing due today. Enjoy the breathing room."
+              maxHeightClass={LIST_MAX_HEIGHT}
             />
             <TaskListCard
               title="Upcoming Deadlines"
               tasks={upcomingDeadlines}
               subjectsById={subjectsById}
-              emptyMessage="No deadlines in the next 7 days."
+              emptyMessage="No deadlines in the next 30 days."
+              maxHeightClass={LIST_MAX_HEIGHT}
+              rangeLabel={upcomingRangeLabel}
             />
           </div>
 
-          <ProductivitySummary completed={completedTasks.length} total={tasks.length} />
+          <ProductivitySummary tasks={tasks} />
         </div>
       </div>
     </div>
